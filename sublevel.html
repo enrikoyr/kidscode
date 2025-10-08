@@ -3,286 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Selection</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <title>Code Cubs Academy - Quiz Selection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #87CEEB; /* Sky Blue */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        /* Custom styles to make the page non-scrollable and apply the cute font */
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: auto; /* Allow scrolling for smaller screens */
+            font-family: 'Nunito', sans-serif;
         }
-
-        .container {
-            display: grid;
-            grid-template-areas:
-                "easy1 easy2 easy3"
-                ". medium1 medium2"
-                ". . hard1";
-            gap: 30px;
-            padding: 40px;
-            background-color: #ffffff;
-            border-radius: 25px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            position: relative;
-            max-width: 900px;
-        }
-
-        .quiz-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 30px;
-            border-radius: 20px;
-            color: #fff;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-
-        .quiz-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .level-text {
+        .font-fredoka {
             font-family: 'Fredoka One', cursive;
-            font-size: 2.2em;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
         }
-
-        .title-text {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 1.1em;
-            line-height: 1.3;
+        /* Fun gradient background animation */
+        body {
+            background: linear-gradient(-45deg, #f0f9ff, #ecfccb, #fce7f3, #e0e7ff);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
         }
-
-        /* Easy Cards */
-        .easy {
-            background-color: #6DD5ED; /* Lighter Green/Cyan for easy */
-            background-image: linear-gradient(to bottom right, #6DD5ED, #2193B0);
-        }
-        .easy .level-text { color: #f0fff0; } /* Lightest green for Easy text */
-
-        /* Medium Cards */
-        .medium {
-            background-color: #FFC371; /* Lighter Orange/Peach for medium */
-            background-image: linear-gradient(to bottom right, #FFC371, #FF5F6D);
-        }
-        .medium .level-text { color: #fff8dc; } /* Creamy white for Medium text */
-
-        /* Hard Cards */
-        .hard {
-            background-color: #F7797D; /* Lighter Red/Coral for hard */
-            background-image: linear-gradient(to bottom right, #F7797D, #C62B44);
-        }
-        .hard .level-text { color: #ffebee; } /* Very light red for Hard text */
-
-        .lock-icon {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 45px;
-            height: 45px;
-            background-color: #FFD700; /* Gold color for lock */
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 4px solid #DAA520; /* Darker gold border */
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            z-index: 10;
-        }
-
-        .lock-icon::before {
-            content: '🔒';
-            font-size: 2em;
-            line-height: 1;
-            transform: translateY(2px); /* Adjust emoji position */
-        }
-
-        /* Grid Area Assignments */
-        .card-easy-1 { grid-area: easy1; }
-        .card-easy-2 { grid-area: easy2; }
-        .card-easy-3 { grid-area: easy3; }
-        .card-medium-1 { grid-area: medium1; }
-        .card-medium-2 { grid-area: medium2; }
-        .card-hard-1 { grid-area: hard1; }
-
-        /* Arrows - using pseudo-elements for a cleaner look */
-        .arrow {
-            position: absolute;
-            background-color: #555;
-            z-index: 5;
-            border-radius: 5px;
-        }
-
-        .arrow-head {
-            position: absolute;
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 15px solid #555;
-            z-index: 5;
-        }
-
-        /* Arrow 1: Easy 1 to Easy 2 */
-        .arrow-1 {
-            top: 100px;
-            left: 200px;
-            width: 80px;
-            height: 8px;
-            transform: translateY(-50%);
-        }
-        .arrow-1 + .arrow-head {
-            top: 93px;
-            left: 270px;
-            transform: rotate(90deg);
-        }
-
-        /* Arrow 2: Easy 2 to Easy 3 */
-        .arrow-2 {
-            top: 100px;
-            left: 450px;
-            width: 80px;
-            height: 8px;
-            transform: translateY(-50%);
-        }
-        .arrow-2 + .arrow-head {
-            top: 93px;
-            left: 520px;
-            transform: rotate(90deg);
-        }
-
-        /* Arrow 3: Easy 3 to Medium 2 (diagonal) */
-        .arrow-3 {
-            width: 8px;
-            height: 140px; /* Adjust length as needed */
-            top: 150px;
-            left: 645px;
-            transform: rotate(30deg); /* Adjust angle for diagonal */
-            transform-origin: top center;
-        }
-        .arrow-3 + .arrow-head {
-            top: 270px;
-            left: 650px;
-            transform: rotate(120deg); /* Adjust angle to match arrow end */
-        }
-
-        /* Arrow 4: Medium 2 to Medium 1 */
-        .arrow-4 {
-            top: 360px;
-            left: 480px;
-            width: 100px;
-            height: 8px;
-            transform: translateY(-50%) rotate(180deg); /* Rotate to point left */
-        }
-        .arrow-4 + .arrow-head {
-            top: 353px;
-            left: 480px;
-            transform: rotate(-90deg); /* Point left */
-        }
-
-        /* Arrow 5: Medium 1 to Hard 1 */
-        .arrow-5 {
-            width: 8px;
-            height: 140px; /* Adjust length as needed */
-            top: 400px;
-            left: 400px;
-            transform: rotate(30deg); /* Adjust angle for diagonal */
-            transform-origin: top center;
-        }
-        .arrow-5 + .arrow-head {
-            top: 520px;
-            left: 405px;
-            transform: rotate(120deg); /* Adjust angle to match arrow end */
-        }
-
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .container {
-                grid-template-areas:
-                    "easy1"
-                    "easy2"
-                    "easy3"
-                    "medium1"
-                    "medium2"
-                    "hard1";
-                padding: 20px;
-                gap: 20px;
-            }
-
-            .quiz-card {
-                width: 100%;
-                max-width: 300px;
-                margin: 0 auto;
-            }
-
-            .level-text {
-                font-size: 1.8em;
-            }
-
-            .title-text {
-                font-size: 1em;
-            }
-
-            /* Hide arrows on smaller screens as layout changes dramatically */
-            .arrow, .arrow-head {
-                display: none;
-            }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="quiz-card easy card-easy-1">
-            <div class="level-text">Easy</div>
-            <div class="title-text">Pengenalan Urutan</div>
-        </div>
-        <div class="quiz-card easy card-easy-2">
-            <div class="level-text">Easy</div>
-            <div class="title-text">Penyesuaian Urutan</div>
-        </div>
-        <div class="quiz-card easy card-easy-3">
-            <div class="level-text">Easy</div>
-            <div class="title-text">Urutan Logis</div>
-        </div>
+<body class="flex items-center justify-center p-4">
 
-        <div class="quiz-card medium card-medium-1">
-            <div class="lock-icon"></div>
-            <div class="level-text">Medium</div>
-            <div class="title-text">Block Mulai / Selesai</div>
-        </div>
-        <div class="quiz-card medium card-medium-2">
-            <div class="lock-icon"></div>
-            <div class="level-text">Medium</div>
-            <div class="title-text">Debug Urutan</div>
-        </div>
+    <!-- Main container for all content -->
+    <div class="w-full max-w-4xl text-center">
 
-        <div class="quiz-card hard card-hard-1">
-            <div class="lock-icon"></div>
-            <div class="level-text">Hard</div>
-            <div class="title-text">Urutan Penuh</div>
-        </div>
+        <!-- Header section with a cute mascot -->
+        <header class="mb-8">
+            <div class="flex justify-center items-center gap-4">
+                <!-- Cute Bear Mascot SVG -->
+                <svg class="w-16 h-16 text-amber-800" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16.5 13.5C17.3284 13.5 18 12.8284 18 12C18 11.1716 17.3284 10.5 16.5 10.5C15.6716 10.5 15 11.1716 15 12C15 12.8284 15.6716 13.5 16.5 13.5Z" fill="#2F2F2F"/>
+                    <path d="M7.5 13.5C8.32843 13.5 9 12.8284 9 12C9 11.1716 8.32843 10.5 7.5 10.5C6.67157 10.5 6 11.1716 6 12C6 12.8284 6.67157 13.5 7.5 13.5Z" fill="#2F2F2F"/>
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM4.4137 13.856C4.14954 13.2359 4 12.6225 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12C20 12.6225 19.8505 13.2359 19.5863 13.856C19.6891 13.9482 19.7821 14.0538 19.8624 14.1707C20.598 15.2428 20.3235 16.7903 19.2514 17.5259C18.1793 18.2615 16.6318 17.987 15.8962 16.9149C15.6193 16.5332 15.3468 15.9315 15.1186 15.3333C14.1223 15.6888 13.0637 15.8889 12 15.8889C10.9363 15.8889 9.87766 15.6888 8.88143 15.3333C8.65319 15.9315 8.38072 16.5332 8.10383 16.9149C7.36822 17.987 5.82068 18.2615 4.74858 17.5259C3.67648 16.7903 3.40203 15.2428 4.13764 14.1707C4.21789 14.0538 4.31093 13.9482 4.4137 13.856ZM12 14.4444C12.9463 14.4444 13.8341 14.2462 14.6316 13.8824C14.7115 13.6828 14.7733 13.4682 14.8152 13.2443C14.9213 12.6773 14.5434 12.1111 13.9764 12.005C13.2462 11.875 12.592 12 12 12C11.408 12 10.7538 11.875 10.0236 12.005C9.45657 12.1111 9.07871 12.6773 9.18478 13.2443C9.2267 13.4682 9.28848 13.6828 9.36839 13.8824C10.1659 14.2462 11.0537 14.4444 12 14.4444Z" />
+                </svg>
+                <h1 class="font-fredoka text-4xl md:text-6xl text-gray-800 tracking-wider">Code Cubs</h1>
+            </div>
+            <p class="mt-2 text-lg md:text-xl text-gray-600">Choose your coding adventure!</p>
+        </header>
 
-        <div class="arrow arrow-1"></div><div class="arrow-head"></div>
-        <div class="arrow arrow-2"></div><div class="arrow-head"></div>
-        <div class="arrow arrow-3"></div><div class="arrow-head"></div>
-        <div class="arrow arrow-4"></div><div class="arrow-head"></div>
-        <div class="arrow arrow-5"></div><div class="arrow-head"></div>
+        <!-- Grid container for the 6 quiz buttons -->
+        <main class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+            
+            <!-- Button 1: Variables -->
+            <button class="group relative aspect-square bg-sky-300 hover:bg-sky-400 rounded-3xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out p-4 flex flex-col justify-center items-center">
+                <div class="text-white text-5xl md:text-6xl transition-transform duration-300 group-hover:scale-110">
+                    <!-- SVG Icon for Variables -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4" />
+                    </svg>
+                </div>
+                <span class="font-fredoka text-white text-2xl md:text-3xl mt-2">Variables</span>
+            </button>
+            
+            <!-- Button 2: Loops -->
+            <button class="group relative aspect-square bg-pink-300 hover:bg-pink-400 rounded-3xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out p-4 flex flex-col justify-center items-center">
+                <div class="text-white text-5xl md:text-6xl transition-transform duration-300 group-hover:scale-110">
+                    <!-- SVG Icon for Loops -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 4l16 16" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 4h5v5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-5 5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 20H4v-5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l5-5" />
+                    </svg>
+                </div>
+                <span class="font-fredoka text-white text-2xl md:text-3xl mt-2">Loops</span>
+            </button>
+            
+            <!-- Button 3: Conditionals -->
+            <button class="group relative aspect-square bg-lime-300 hover:bg-lime-400 rounded-3xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out p-4 flex flex-col justify-center items-center">
+                <div class="text-white text-5xl md:text-6xl transition-transform duration-300 group-hover:scale-110">
+                    <!-- SVG Icon for Conditionals -->
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6.903C9 6.397 9.402 6 9.908 6h5.184C15.598 6 16 6.397 16 6.903V19M9 19h7M9 19H5.5M16 19h3.5M5.5 19V9.487c0-.528.21-1.034.586-1.41l3.05-3.053M18.5 19V9.487c0-.528-.21-1.034-.586-1.41l-3.05-3.053" />
+                    </svg>
+                </div>
+                <span class="font-fredoka text-white text-2xl md:text-3xl mt-2">If/Else</span>
+            </button>
+
+            <!-- Button 4: Functions -->
+            <button class="group relative aspect-square bg-violet-300 hover:bg-violet-400 rounded-3xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out p-4 flex flex-col justify-center items-center">
+                <div class="text-white text-5xl md:text-6xl transition-transform duration-300 group-hover:scale-110">
+                    <!-- SVG Icon for Functions -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <span class="font-fredoka text-white text-2xl md:text-3xl mt-2">Functions</span>
+            </button>
+
+            <!-- Button 5: Events -->
+            <button class="group relative aspect-square bg-amber-300 hover:bg-amber-400 rounded-3xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out p-4 flex flex-col justify-center items-center">
+                <div class="text-white text-5xl md:text-6xl transition-transform duration-300 group-hover:scale-110">
+                    <!-- SVG Icon for Events -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.05 4.95a7 7 0 11-9.9 9.9L2 22l7.05-3.05a7 7 0 017-14zM12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" />
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <span class="font-fredoka text-white text-2xl md:text-3xl mt-2">Events</span>
+            </button>
+            
+            <!-- Button 6: Sequences -->
+            <button class="group relative aspect-square bg-teal-300 hover:bg-teal-400 rounded-3xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 ease-in-out p-4 flex flex-col justify-center items-center">
+                <div class="text-white text-5xl md:text-6xl transition-transform duration-300 group-hover:scale-110">
+                    <!-- SVG Icon for Sequences -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V8m10 8V8" />
+                    </svg>
+                </div>
+                <span class="font-fredoka text-white text-2xl md:text-3xl mt-2">Sequences</span>
+            </button>
+            
+        </main>
+
     </div>
+
 </body>
 </html>
