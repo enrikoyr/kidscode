@@ -44,6 +44,18 @@
             transform: translateY(-5px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
         }
+        .run-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .run-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .run-button:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         .nav-button {
             transition: all 0.3s ease;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -80,6 +92,52 @@
             outline: none;
             border-style: solid;
             border-color: #7dd3fc; /* Sky 300 */
+        }
+        .sequence-dropzone {
+            min-height: 220px; /* More vertical space */
+            background-color: #334155; /* Slate 700 */
+            border: 2px dashed #475569;
+            width: 100%;
+            display: flex;
+            flex-direction: column; /* Stack blocks vertically */
+            align-items: center; /* Center blocks horizontally */
+            justify-content: flex-start; /* Align blocks to the top */
+            gap: 0.5rem; /* 8px */
+            padding: 1rem; /* 16px */
+            border-radius: 12px; /* Match code-block style */
+        }
+        .sequence-dropzone.drag-over {
+            background-color: #475569; /* Slate 600 */
+            border-style: solid;
+        }
+        .draggable-block {
+            background-color: #0ea5e9; /* Sky 500 */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: grab;
+            display: inline-block;
+            font-family: monospace;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            user-select: none; /* prevent text selection while dragging */
+        }
+        .draggable-block.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+        #q1-drag-source {
+            min-height: 80px; /* Taller to feel more like a container */
+            padding: 1rem; /* 16px */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem; /* 8px */
+            justify-content: center;
+            align-items: center;
+            border-width: 2px;
+            border-style: dashed;
+            border-color: #cbd5e1; /* slate-300 */
+            border-radius: 0.5rem; /* 8px */
         }
         .output-box {
             background-color: #f8fafc; /* Slate 50 */
@@ -131,17 +189,23 @@
                     <div class="flex flex-col justify-center">
                          <div class="flex items-center gap-4 mb-4">
                             <div class="w-16 h-16 bg-sky-100 text-sky-500 rounded-2xl flex items-center justify-center text-3xl font-bold">1</div>
-                            <h2 class="text-2xl text-sky-600">Say Hello!</h2>
+                            <h2 class="text-2xl text-sky-600">Build a Sentence</h2>
                         </div>
-                        <p class="text-slate-600 mb-4">Our friendly robot wants to greet the world! Tell it to say <strong class="text-sky-500">"Hello, Coder!"</strong>.</p>
+                        <p class="text-slate-600 mb-4">Arrange the blocks in the correct order to tell the world who you are!</p>
                         <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12V20C2 21.1 2.9 22 4 22H20C21.1 22 22 21.1 22 20V12C22 6.48 17.52 2 12 2ZM17 13H7V11H17V13ZM10 17H7V15H10V17ZM17 17H14V15H17V17Z" fill="#38bdf8"/></svg></div>
                     </div>
                     <!-- Right Side: Code -->
                     <div class="flex flex-col justify-center">
-                        <div class="code-block text-lg">
-                            <span class="text-pink-400">print</span>(<input type="text" id="q1-input" class="code-input w-36" placeholder='"Your Text"'>)
+                        <div id="q1-sequence-dropzone" class="sequence-dropzone">
+                            <!-- Dropped blocks will appear here -->
                         </div>
-                        <button onclick="runQuiz1()" class="run-button mt-4 w-full bg-sky-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Run Code</button>
+                        <div id="q1-drag-source" class="mt-4">
+                            <div class="draggable-block bg-emerald-500" draggable="true" data-value="Coder!">"Coder!"</div>
+                            <div class="draggable-block" draggable="true" data-value="I">"I"</div>
+                            <div class="draggable-block bg-rose-500" draggable="true" data-value="Robot">"Robot"</div>
+                            <div class="draggable-block" draggable="true" data-value="am">"am"</div>
+                        </div>
+                        <button onclick="runQuiz1()" class="run-button mt-4 w-full bg-sky-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Check Sequence</button>
                     </div>
                 </div>
                 <!-- Output -->
@@ -323,6 +387,45 @@
                 }
             });
             
+            // --- DRAG AND DROP LOGIC FOR QUIZ 1 ---
+            const draggables = document.querySelectorAll('.draggable-block');
+            const dropzone = document.getElementById('q1-sequence-dropzone');
+            const dragSource = document.getElementById('q1-drag-source');
+            let draggedItem = null;
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target;
+                    setTimeout(() => e.target.classList.add('dragging'), 0);
+                });
+
+                draggable.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                    draggedItem = null;
+                });
+            });
+
+            [dropzone, dragSource].forEach(container => {
+                container.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if (e.currentTarget.classList.contains('dropzone') || e.currentTarget.classList.contains('draggable-container')) {
+                        e.currentTarget.classList.add('drag-over');
+                    }
+                });
+
+                container.addEventListener('dragleave', e => {
+                    e.currentTarget.classList.remove('drag-over');
+                });
+
+                container.addEventListener('drop', e => {
+                    e.preventDefault();
+                    if (!draggedItem) return;
+                    
+                    e.currentTarget.appendChild(draggedItem);
+                    e.currentTarget.classList.remove('drag-over');
+                });
+            });
+
             // Show the first quiz initially
             showQuiz(0);
         });
@@ -344,14 +447,19 @@
 
         // Quiz 1 Logic
         function runQuiz1() {
-            const input = document.getElementById('q1-input').value;
+            const sequenceDropzone = document.getElementById('q1-sequence-dropzone');
             const outputEl = document.getElementById('q1-output');
-            const correctAnswer = "Hello, Coder!";
+            const correctAnswer = "I am Coder!";
             
-            if (input.trim().toLowerCase().replace(/["']/g, '') === correctAnswer.toLowerCase().replace(/["']/g, '')) {
-                updateOutput(outputEl, true, `Success! The robot says: "${correctAnswer}"`);
+            const blocks = Array.from(sequenceDropzone.children);
+            const userAnswer = blocks.map(block => block.dataset.value).join(' ');
+
+            if (userAnswer === correctAnswer) {
+                updateOutput(outputEl, true, `Perfect Sequence! You created: "${userAnswer}"`);
+            } else if (userAnswer === "") {
+                updateOutput(outputEl, false, `The sequence is empty! Drag some blocks to build the sentence.`);
             } else {
-                updateOutput(outputEl, false, `Almost! The robot said: "${input}". Try again!`);
+                updateOutput(outputEl, false, `Not quite right. Your sequence is: "${userAnswer}". Try re-arranging the blocks!`);
             }
         }
 
@@ -425,4 +533,6 @@
 
 </body>
 </html>
+
+
 
