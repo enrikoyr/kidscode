@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiddie Coder Quest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to enhance the cute theme */
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* Light sky blue background */
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 2rem;
+        }
+        h1, h2, h3 {
+            font-family: 'Fredoka One', cursive;
+        }
+        .quiz-card {
+            background-color: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 4px solid #e0f2fe;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 56rem; /* 896px */
+        }
+        .quiz-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .nav-button:active:not(:disabled) {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .code-block {
+            background-color: #1e293b; /* Slate 800 */
+            color: white;
+            font-family: monospace;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .code-input {
+            background-color: #334155; /* Slate 700 */
+            color: #fde047; /* Yellow 300 */
+            border: 2px dashed #475569;
+            border-radius: 8px;
+            padding: 4px 8px;
+            text-align: center;
+        }
+        .code-input:focus {
+            outline: none;
+            border-style: solid;
+            border-color: #7dd3fc; /* Sky 300 */
+        }
+        .output-box {
+            background-color: #f8fafc; /* Slate 50 */
+            border: 2px solid #e2e8f0; /* Slate 200 */
+            min-height: 60px;
+            transition: all 0.3s ease;
+        }
+        .output-correct {
+            background-color: #f0fdf4; /* Green 50 */
+            border-color: #4ade80; /* Green 400 */
+            color: #166534; /* Green 800 */
+        }
+        .output-wrong {
+            background-color: #fef2f2; /* Red 50 */
+            border-color: #f87171; /* Red 400 */
+            color: #991b1b; /* Red 800 */
+        }
+        .mascot {
+            width: 80px;
+            height: 80px;
+        }
+        /* Initially hide all quizzes except the first one */
+        .quiz-card:not(:first-child) {
+            display: none;
+        }
+        #finish-screen {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <!-- Header Section -->
+    <header class="text-center py-8 px-4">
+        <div class="inline-block bg-white p-4 rounded-3xl shadow-lg">
+            <h1 class="text-4xl md:text-5xl text-sky-500">Kiddie Coder Quest</h1>
+        </div>
+        <p class="text-lg mt-3 text-slate-500 max-w-2xl mx-auto">Welcome, brave adventurer! Complete the quests to become a true Code Master.</p>
+    </header>
+
+    <!-- Main Content: Quizzes will be swapped here -->
+    <main class="container mx-auto px-4">
+        
+        <!-- Quiz 1: Say Hello -->
+        <div class="quiz-card">
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Problem -->
+                    <div class="flex flex-col justify-center">
+                         <div class="flex items-center gap-4 mb-4">
+                            <div class="w-16 h-16 bg-sky-100 text-sky-500 rounded-2xl flex items-center justify-center text-3xl font-bold">1</div>
+                            <h2 class="text-2xl text-sky-600">Say Hello!</h2>
+                        </div>
+                        <p class="text-slate-600 mb-4">Our friendly robot wants to greet the world! Tell it to say <strong class="text-sky-500">"Hello, Coder!"</strong>.</p>
+                        <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12V20C2 21.1 2.9 22 4 22H20C21.1 22 22 21.1 22 20V12C22 6.48 17.52 2 12 2ZM17 13H7V11H17V13ZM10 17H7V15H10V17ZM17 17H14V15H17V17Z" fill="#38bdf8"/></svg></div>
+                    </div>
+                    <!-- Right Side: Code -->
+                    <div class="flex flex-col justify-center">
+                        <div class="code-block text-lg">
+                            <span class="text-pink-400">print</span>(<input type="text" id="q1-input" class="code-input w-36" placeholder='"Your Text"'>)
+                        </div>
+                        <button onclick="runQuiz1()" class="run-button mt-4 w-full bg-sky-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Run Code</button>
+                    </div>
+                </div>
+                <!-- Output -->
+                <div class="mt-6"><h3 class="font-bold text-slate-500 mb-2">Output:</h3><div id="q1-output" class="output-box p-4 rounded-lg font-mono text-center">Awaiting your command...</div></div>
+            </div>
+        </div>
+
+        <!-- Quiz 2: Simple Math -->
+        <div class="quiz-card">
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Problem -->
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-4"><div class="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-2xl flex items-center justify-center text-3xl font-bold">2</div><h2 class="text-2xl text-emerald-600">Rocket Fuel</h2></div>
+                        <p class="text-slate-600 mb-4">A rocket needs <strong class="text-emerald-500">5</strong> red fuel cells and <strong class="text-emerald-500">3</strong> blue ones. How many total fuel cells?</p>
+                        <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L12 5M12 19L12 22M22 12L19 12M5 12L2 12M19.07 4.93L16.95 7.05M7.05 16.95L4.93 19.07M19.07 19.07L16.95 16.95M7.05 7.05L4.93 4.93M16 12C16 14.21 14.21 16 12 16C9.79 16 8 14.21 8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12Z" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <!-- Right Side: Code -->
+                    <div class="flex flex-col justify-center">
+                        <div class="code-block text-lg"><span class="text-blue-400">let</span> totalFuel = 5 + <input type="number" id="q2-input" class="code-input w-16" placeholder='?'></div>
+                        <button onclick="runQuiz2()" class="run-button mt-4 w-full bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Calculate</button>
+                    </div>
+                </div>
+                <!-- Output -->
+                <div class="mt-6"><h3 class="font-bold text-slate-500 mb-2">Output:</h3><div id="q2-output" class="output-box p-4 rounded-lg font-mono text-center">Engine is idle...</div></div>
+            </div>
+        </div>
+
+        <!-- Quiz 3: Variables -->
+        <div class="quiz-card">
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Problem -->
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-4"><div class="w-16 h-16 bg-yellow-100 text-yellow-500 rounded-2xl flex items-center justify-center text-3xl font-bold">3</div><h2 class="text-2xl text-yellow-600">Treasure Chest</h2></div>
+                        <p class="text-slate-600 mb-4">We found a chest with <strong class="text-yellow-500">10</strong> gold coins! Store this number in a variable named <strong class="text-yellow-500">coins</strong>.</p>
+                        <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 8H19C19.5523 8 20 8.44772 20 9V17C20 17.5523 19.5523 18 19 18H5C4.44772 18 4 17.5523 4 17V9C4 8.44772 4.44772 8 5 8Z" stroke="#f59e0b" stroke-width="2"/><path d="M4 9L12 5L20 9" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18V8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <!-- Right Side: Code -->
+                    <div class="flex flex-col justify-center">
+                        <div class="code-block text-lg"><span class="text-blue-400">let</span> coins = <input type="number" id="q3-input" class="code-input w-16" placeholder='?'></div>
+                        <button onclick="runQuiz3()" class="run-button mt-4 w-full bg-yellow-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Store Value</button>
+                    </div>
+                </div>
+                <!-- Output -->
+                <div class="mt-6"><h3 class="font-bold text-slate-500 mb-2">Output:</h3><div id="q3-output" class="output-box p-4 rounded-lg font-mono text-center">Chest is empty...</div></div>
+            </div>
+        </div>
+
+        <!-- Quiz 4: String Joining -->
+        <div class="quiz-card">
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Problem -->
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-4"><div class="w-16 h-16 bg-indigo-100 text-indigo-500 rounded-2xl flex items-center justify-center text-3xl font-bold">4</div><h2 class="text-2xl text-indigo-600">Magic Potion</h2></div>
+                        <p class="text-slate-600 mb-4">Let's create a magic word! Join <strong class="text-indigo-500">"ABRA"</strong> with <strong class="text-indigo-500">"CADABRA"</strong> to cast a spell.</p>
+                        <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 3L15 3L15 6L17 6C18.1046 6 19 6.89543 19 8L19 19C19 20.6569 17.6569 22 16 22L8 22C6.34315 22 5 20.6569 5 19L5 8C5 6.89543 5.89543 6 7 6L9 6L9 3Z" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 3C9 2.44772 9.44772 2 10 2L14 2C14.5523 2 15 2.44772 15 3V3H9V3Z" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="11" r="1" fill="#6366f1"/><circle cx="10" cy="15" r="1" fill="#6366f1"/><circle cx="14" cy="15" r="1" fill="#6366f1"/></svg></div>
+                    </div>
+                    <!-- Right Side: Code -->
+                    <div class="flex flex-col justify-center">
+                        <div class="code-block text-lg"><span class="text-orange-400">"ABRA"</span> + <input type="text" id="q4-input" class="code-input w-36" placeholder='"word"'></div>
+                        <button onclick="runQuiz4()" class="run-button mt-4 w-full bg-indigo-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Cast Spell</button>
+                    </div>
+                </div>
+                <!-- Output -->
+                <div class="mt-6"><h3 class="font-bold text-slate-500 mb-2">Output:</h3><div id="q4-output" class="output-box p-4 rounded-lg font-mono text-center">The cauldron is bubbling...</div></div>
+            </div>
+        </div>
+
+        <!-- Quiz 5: Conditionals -->
+        <div class="quiz-card">
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Problem -->
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-4"><div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-2xl flex items-center justify-center text-3xl font-bold">5</div><h2 class="text-2xl text-rose-600">Open the Gate</h2></div>
+                        <p class="text-slate-600 mb-4">To open the castle gate, the secret key must be greater than <strong class="text-rose-500">20</strong>. Let's use the key <strong class="text-rose-500">25</strong>. Will it open?</p>
+                        <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.707 3.293C15.926 2.512 14.759 2.512 13.979 3.293L10.5 6.772C9.72 7.552 9.72 8.719 10.5 9.499C11.28 10.279 12.447 10.279 13.227 9.499L16.707 6.02C17.487 5.24 17.487 4.073 16.707 3.293Z" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 9.5L5 15L3 17L7 21L9 19L14.5 13.5" stroke="#e11d48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <!-- Right Side: Code -->
+                    <div class="flex flex-col justify-center">
+                        <div class="code-block text-sm"><span class="text-purple-400">if</span> (key > 20) { <br>&nbsp;&nbsp;<span class="text-pink-400">return</span> <input type="text" id="q5-input" class="code-input w-28" placeholder='"Open"'>;<br>} <span class="text-purple-400">else</span> { <br>&nbsp;&nbsp;<span class="text-pink-400">return</span> <span class="text-orange-400">"Closed"</span>;<br>}</div>
+                        <button onclick="runQuiz5()" class="run-button mt-4 w-full bg-rose-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Try Key</button>
+                    </div>
+                </div>
+                <!-- Output -->
+                <div class="mt-6"><h3 class="font-bold text-slate-500 mb-2">Output:</h3><div id="q5-output" class="output-box p-4 rounded-lg font-mono text-center">The gate is locked...</div></div>
+            </div>
+        </div>
+
+        <!-- Quiz 6: Loops -->
+        <div class="quiz-card">
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Problem -->
+                    <div class="flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-4"><div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center text-3xl font-bold">6</div><h2 class="text-2xl text-orange-600">Star Collector</h2></div>
+                        <p class="text-slate-600 mb-4">A loop can do things many times. Let's make a loop that prints a star ⭐ <strong class="text-orange-500">3</strong> times. How many times should it run?</p>
+                        <div class="mt-2 hidden md:flex justify-center"><svg class="mascot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    </div>
+                    <!-- Right Side: Code -->
+                    <div class="flex flex-col justify-center">
+                        <div class="code-block text-sm"><span class="text-purple-400">for</span> (<span class="text-blue-400">let</span> i=0; i < <input type="number" id="q6-input" class="code-input w-12" placeholder='?'>; i++) {<br>&nbsp;&nbsp;<span class="text-pink-400">print</span>(<span class="text-orange-400">"⭐"</span>);<br>}</div>
+                        <button onclick="runQuiz6()" class="run-button mt-4 w-full bg-orange-500 text-white font-bold py-3 px-4 rounded-xl text-lg">Run Loop</button>
+                    </div>
+                </div>
+                <!-- Output -->
+                <div class="mt-6"><h3 class="font-bold text-slate-500 mb-2">Output:</h3><div id="q6-output" class="output-box p-4 rounded-lg font-mono text-center">No stars collected yet...</div></div>
+            </div>
+        </div>
+
+        <!-- Finish Screen -->
+        <div id="finish-screen" class="text-center">
+             <h2 class="text-4xl md:text-5xl text-yellow-500">Quest Complete!</h2>
+             <p class="text-xl mt-4 text-slate-600">You are a true Code Master! Well done!</p>
+             <div class="text-6xl mt-6">🏆</div>
+             <button onclick="restartQuest()" class="nav-button mt-8 bg-sky-500 text-white font-bold py-3 px-6 rounded-xl text-lg">Play Again</button>
+        </div>
+
+        <!-- Navigation -->
+        <div id="navigation" class="mt-8 flex items-center gap-4">
+            <button id="prev-btn" class="nav-button bg-slate-500 text-white font-bold py-3 px-6 rounded-xl text-lg">Previous</button>
+            <span id="progress-indicator" class="font-bold text-slate-600 text-lg">Quest 1 of 6</span>
+            <button id="next-btn" class="nav-button bg-sky-500 text-white font-bold py-3 px-6 rounded-xl text-lg">Next Quest</button>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizzes = document.querySelectorAll('.quiz-card');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressIndicator = document.getElementById('progress-indicator');
+            const navigation = document.getElementById('navigation');
+            const finishScreen = document.getElementById('finish-screen');
+            let currentQuizIndex = 0;
+
+            function showQuiz(index) {
+                // Hide all quizzes
+                quizzes.forEach((quiz, i) => {
+                    quiz.style.display = 'none';
+                });
+                
+                // Show the target quiz
+                if(quizzes[index]) {
+                    quizzes[index].style.display = 'block';
+                }
+
+                // Update progress indicator
+                progressIndicator.textContent = `Quest ${index + 1} of ${quizzes.length}`;
+
+                // Update button states
+                prevBtn.disabled = index === 0;
+
+                if (index === quizzes.length - 1) {
+                    nextBtn.textContent = 'Finish Quest!';
+                } else {
+                    nextBtn.textContent = 'Next Quest';
+                }
+            }
+            
+            nextBtn.addEventListener('click', () => {
+                if (currentQuizIndex < quizzes.length - 1) {
+                    currentQuizIndex++;
+                    showQuiz(currentQuizIndex);
+                } else {
+                    // Reached the end
+                    quizzes[currentQuizIndex].style.display = 'none';
+                    navigation.style.display = 'none';
+                    finishScreen.style.display = 'block';
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentQuizIndex > 0) {
+                    currentQuizIndex--;
+                    showQuiz(currentQuizIndex);
+                }
+            });
+            
+            // Show the first quiz initially
+            showQuiz(0);
+        });
+
+        function restartQuest() {
+             window.location.reload();
+        }
+
+        // Helper function to update output UI
+        function updateOutput(outputEl, isCorrect, message) {
+            outputEl.innerHTML = message;
+            outputEl.classList.remove('output-correct', 'output-wrong');
+            if (isCorrect) {
+                outputEl.classList.add('output-correct');
+            } else {
+                outputEl.classList.add('output-wrong');
+            }
+        }
+
+        // Quiz 1 Logic
+        function runQuiz1() {
+            const input = document.getElementById('q1-input').value;
+            const outputEl = document.getElementById('q1-output');
+            const correctAnswer = "Hello, Coder!";
+            
+            if (input.trim().toLowerCase().replace(/["']/g, '') === correctAnswer.toLowerCase().replace(/["']/g, '')) {
+                updateOutput(outputEl, true, `Success! The robot says: "${correctAnswer}"`);
+            } else {
+                updateOutput(outputEl, false, `Almost! The robot said: "${input}". Try again!`);
+            }
+        }
+
+        // Quiz 2 Logic
+        function runQuiz2() {
+            const input = document.getElementById('q2-input').value;
+            const outputEl = document.getElementById('q2-output');
+            
+            if (parseInt(input) === 3) {
+                updateOutput(outputEl, true, 'Total fuel cells: 8. Blast off! 🚀');
+            } else {
+                 const total = 5 + (parseInt(input) || 0);
+                updateOutput(outputEl, false, `Calculation error. Your result: ${total}. Hint: there are 3 blue cells.`);
+            }
+        }
+        
+        // Quiz 3 Logic
+        function runQuiz3() {
+            const input = document.getElementById('q3-input').value;
+            const outputEl = document.getElementById('q3-output');
+            
+            if (parseInt(input) === 10) {
+                updateOutput(outputEl, true, 'Excellent! The variable "coins" now holds 10. 🪙');
+            } else {
+                updateOutput(outputEl, false, `Not quite. The variable holds ${input || 'nothing'}. Remember, there were 10 coins!`);
+            }
+        }
+
+        // Quiz 4 Logic
+        function runQuiz4() {
+            const input = document.getElementById('q4-input').value.replace(/['"]+/g, ''); // remove quotes
+            const outputEl = document.getElementById('q4-output');
+            const correctAnswer = "CADABRA";
+            
+            if (input.trim().toUpperCase() === correctAnswer) {
+                updateOutput(outputEl, true, '✨ Poof! ✨ You cast the spell: "ABRACADABRA"');
+            } else {
+                updateOutput(outputEl, false, `The spell fizzled! You made: "ABRA${input}"`);
+            }
+        }
+        
+        // Quiz 5 Logic
+        function runQuiz5() {
+            const input = document.getElementById('q5-input').value.replace(/['"]+/g, '');
+            const outputEl = document.getElementById('q5-output');
+            
+            if (input.trim().toLowerCase() === 'open') {
+                 updateOutput(outputEl, true, 'Correct! The key is 25, which is > 20, so the gate is "Open"!');
+            } else {
+                updateOutput(outputEl, false, `Incorrect. Since 25 is greater than 20, the gate should be "Open".`);
+            }
+        }
+        
+        // Quiz 6 Logic
+        function runQuiz6() {
+            const input = document.getElementById('q6-input').value;
+            const outputEl = document.getElementById('q6-output');
+            
+            if (parseInt(input) === 3) {
+                updateOutput(outputEl, true, 'Perfect! The loop ran 3 times: ⭐ ⭐ ⭐');
+            } else {
+                let stars = '';
+                for(let i=0; i < (parseInt(input) || 0); i++){
+                    if (stars.length > 30) break; // prevent too many stars
+                    stars += '⭐ ';
+                }
+                updateOutput(outputEl, false, `You printed ${parseInt(input) || 0} stars: ${stars}`);
+            }
+        }
+    </script>
+
+</body>
+</html>
+
