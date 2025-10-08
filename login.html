@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Anak – Nama (Hewan+Warna) + PIN</title>
+  <style>
+    :root{
+      --bg: #f7f7ff;
+      --card: #ffffff;
+      --text: #222;
+      --accent: #6c63ff;
+      --accent-2: #00c2a8;
+      --danger: #ff5d6c;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 24px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Emoji", sans-serif; 
+      background: radial-gradient(1200px 800px at 10% -10%, #E9F7FF 0%, transparent 60%),
+                  radial-gradient(1000px 800px at 110% 10%, #FDEDFC 0%, transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100svh; display:grid; place-items:center;
+    }
+    .card{ width:min(92vw, 520px); background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; position:relative; overflow:hidden }
+    .header{ display:flex; align-items:center; gap:14px; margin-bottom:10px }
+    .mascot{ width:64px; height:64px; border-radius:50%; display:grid; place-items:center; font-size:34px; background: conic-gradient(from 0deg, #ffe082, #ffd54f, #ffca28, #ffe082); box-shadow: inset 0 2px 6px rgba(0,0,0,.1), 0 6px 14px rgba(0,0,0,.06); animation: floaty 3s ease-in-out infinite }
+    @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+    h1{ font-size:1.25rem; margin:0; line-height:1.1 }
+    .sub{opacity:.75; font-size:.95rem}
+
+    .grid{ display:grid; gap:14px }
+    .field{ background:#fafbff; border:2px solid #e7ebff; border-radius:16px; padding:12px 14px }
+    .label{ font-weight:800; font-size:.9rem; opacity:.7; margin-bottom:6px }
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+    input[type="text"]{ flex:1; border:none; background:#fff; border-radius:12px; padding:12px 14px; font-size:1rem; outline: none; box-shadow: inset 0 2px 6px rgba(0,0,0,.04) }
+    .chip{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#fff; box-shadow: var(--shadow); font-weight:800 }
+    .chip .dot{ width:14px; height:14px; border-radius:50% }
+
+    /* Palette warna */
+    .palette{ display:grid; grid-template-columns: repeat(6, 1fr); gap:10px }
+    .swatch{ aspect-ratio:1/1; border:none; border-radius:12px; cursor:pointer; box-shadow: var(--shadow); position:relative }
+    .swatch.selected::after{ content:""; position:absolute; inset:3px; border:3px solid #fff; border-radius:10px; box-shadow:0 0 0 2px rgba(0,0,0,.2) }
+
+    /* PIN */
+    .pin-dots{ display:flex; gap:10px; justify-content:center; margin:6px 0 10px }
+    .dotpin{ width:18px; height:18px; border-radius:12px; border:2px solid #cfd8dc; background:#fff; box-shadow:inset 0 2px 0 rgba(0,0,0,.03) }
+    .dotpin.filled{ background:var(--accent); border-color:var(--accent); box-shadow:0 0 0 4px rgba(108,99,255,.12) inset }
+
+    .keys{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px }
+    .key{ aspect-ratio:1/1; border:none; border-radius:18px; font-size:1.6rem; font-weight:800; cursor:pointer; background:linear-gradient(180deg, #ffffff, #f3f6ff); box-shadow: var(--shadow); transition: transform .06s ease, box-shadow .1s ease }
+    .key:active{ transform: translateY(2px) scale(.98); box-shadow: 0 6px 18px rgba(0,0,0,.08)}
+    .key.action{ font-size:1rem; font-weight:700 }
+
+    .row-actions{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px }
+    .btn{ padding:14px 16px; border:none; border-radius:16px; font-size:1rem; font-weight:800; cursor:pointer; background:var(--accent); color:#fff; box-shadow:0 10px 24px rgba(108,99,255,.25); transition: transform .06s ease }
+    .btn.secondary{ background:#eef2ff; color:#3f51b5; box-shadow: var(--shadow) }
+    .btn:active{ transform: translateY(1px) }
+
+    .display{ text-align:center; font-weight:900; font-size:1.05rem; padding:10px 12px; background:#fff; border-radius:14px; box-shadow: inset 0 2px 6px rgba(0,0,0,.04) }
+
+    .msg{ text-align:center; min-height:22px; font-weight:700; }
+    .msg.ok{ color: var(--accent-2) }
+    .msg.err{ color: var(--danger) }
+
+    .shake{ animation: shake .28s ease both }
+    @keyframes shake{ 10%, 90%{transform: translateX(-2px)} 20%,80%{transform: translateX(4px)} 30%,50%,70%{transform: translateX(-8px)} 40%,60%{transform: translateX(8px)} }
+
+    .confetti{ position:absolute; inset:0; pointer-events:none; overflow:hidden }
+    .piece{ position:absolute; width:10px; height:14px; border-radius:3px; opacity:0; animation: drop 900ms ease-out forwards }
+    @keyframes drop{ 0%{ transform: translateY(-40px) rotate(0); opacity:0 } 15%{opacity:1} 100%{ transform: translateY(450px) rotate(480deg); opacity:0 } }
+
+    .footer{ text-align:center; margin-top:12px; font-size:.85rem; opacity:.7 }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <div class="confetti" aria-hidden="true" id="confetti"></div>
+    <div class="header">
+      <div class="mascot" aria-hidden="true">🦁</div>
+      <div>
+        <h1 id="title">Masuk Kelas</h1>
+        <div class="sub">Ketik <strong>nama hewan</strong> + pilih <strong>warna</strong>, lalu masukkan <strong>PIN 6 angka</strong>.</div>
+      </div>
+    </div>
+
+    <section class="grid" aria-label="Identitas Anak">
+      <!-- NAMA HEWAN -->
+      <div class="field">
+        <div class="label">Nama hewan</div>
+        <div class="row">
+          <input id="animal" type="text" placeholder="contoh: Singa, Kelinci, Harimau" inputmode="latin-name" aria-label="Nama hewan" />
+          <button class="btn secondary" id="btn-dice" aria-label="Acak nama">🎲 Acak</button>
+        </div>
+      </div>
+
+      <!-- WARNA -->
+      <div class="field">
+        <div class="label">Pilih warna</div>
+        <div class="palette" id="palette" role="group" aria-label="Pilih warna favorit">
+          <!-- swatches dibuat via JS -->
+        </div>
+      </div>
+
+      <!-- NAMA TAMPILAN -->
+      <div class="display" id="displayName">Nama kamu: —</div>
+
+      <!-- PIN -->
+      <div class="field">
+        <div class="label">PIN (6 angka)</div>
+        <div class="pin-dots" aria-label="Status PIN" aria-live="polite">
+          <div class="dotpin" id="p0"></div>
+          <div class="dotpin" id="p1"></div>
+          <div class="dotpin" id="p2"></div>
+          <div class="dotpin" id="p3"></div>
+          <div class="dotpin" id="p4"></div>
+          <div class="dotpin" id="p5"></div>
+        </div>
+        <p id="msg" class="msg" aria-live="polite"></p>
+        <div class="keys" role="group" aria-label="Keypad angka">
+          <button class="key" data-k="1" aria-label="1">1</button>
+          <button class="key" data-k="2" aria-label="2">2</button>
+          <button class="key" data-k="3" aria-label="3">3</button>
+          <button class="key" data-k="4" aria-label="4">4</button>
+          <button class="key" data-k="5" aria-label="5">5</button>
+          <button class="key" data-k="6" aria-label="6">6</button>
+          <button class="key" data-k="7" aria-label="7">7</button>
+          <button class="key" data-k="8" aria-label="8">8</button>
+          <button class="key" data-k="9" aria-label="9">9</button>
+          <button class="key action" data-k="bk" aria-label="Hapus satu">⌫</button>
+          <button class="key" data-k="0" aria-label="0">0</button>
+          <button class="key action" data-k="ok" aria-label="Masuk">⏎</button>
+        </div>
+        <div class="row-actions">
+          <button class="btn secondary" id="btn-clear" aria-label="Bersihkan PIN">Bersihkan</button>
+          <button class="btn" id="btn-login" aria-label="Masuk" disabled>Masuk ✅</button>
+        </div>
+      </div>
+
+      <p id="status" class="msg" aria-live="polite"></p>
+      <p class="footer">Demo benar: Nama <strong>Biru Singa</strong> & PIN <strong>246810</strong>. (Ubah di konstanta <em>CORRECT_COLOR_LABEL</em>, <em>CORRECT_ANIMAL</em>, dan <em>CORRECT_PIN</em>.)</p>
+    </section>
+  </main>
+
+  <span class="sr-only" id="sr-status" aria-live="polite"></span>
+
+  <script>
+    // === Pengaturan Demo (ubah sesuai kebutuhan) ===
+    const CORRECT_PIN = "246810";             // PIN benar
+    const CORRECT_ANIMAL = "singa";           // nama hewan (lowercase)
+    const CORRECT_COLOR_LABEL = "Biru";       // label warna yang benar (case sensitive untuk tampilan saja)
+
+    // Daftar warna (key,label,hex)
+    const COLORS = [
+      {key:'Merah', hex:'#ff6b6b'},
+      {key:'Biru', hex:'#4dabf7'},
+      {key:'Kuning', hex:'#ffd43b'},
+      {key:'Hijau', hex:'#51cf66'},
+      {key:'Ungu', hex:'#b197fc'},
+      {key:'Jingga', hex:'#ffa94d'},
+      {key:'Hitam', hex:'#263238'},
+      {key:'Putih', hex:'#ffffff'},
+      {key:'Pink', hex:'#ff79c6'},
+      {key:'Cokelat', hex:'#a26b43'},
+      {key:'Abu', hex:'#90a4ae'},
+      {key:'Emas', hex:'#d4af37'}
+    ];
+
+    // === State ===
+    let selectedColor = null; // string label (mis. 'Biru')
+    let pin = "";
+
+    // DOM refs
+    const msg = document.getElementById('msg');
+    const status = document.getElementById('status');
+    const sr = document.getElementById('sr-status');
+    const animal = document.getElementById('animal');
+    const displayName = document.getElementById('displayName');
+    const btnDice = document.getElementById('btn-dice');
+    const palette = document.getElementById('palette');
+    const btnLogin = document.getElementById('btn-login');
+    const dots = [...document.querySelectorAll('.dotpin')];
+
+    // Suara sederhana (beep) via WebAudio
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq=660, dur=80, type='sine', vol=0.08){
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = type; o.frequency.value = freq;
+      g.gain.value = vol; o.connect(g); g.connect(ctx.destination);
+      o.start(); setTimeout(()=>o.stop(), dur);
+    }
+
+    function setMessage(el, text, kind){ el.textContent = text || ""; el.className = 'msg' + (kind? ' ' + kind : ''); sr.textContent = text || ""; }
+    function updateDots(){ dots.forEach((d,i)=> d.classList.toggle('filled', i < pin.length)); }
+    function canSubmit(){ return animal.value.trim().length>0 && !!selectedColor && pin.length===6 }
+    function updateDisplay(){
+      const a = capitalize(animal.value.trim());
+      const name = (selectedColor? selectedColor : '—') + ' ' + (a || '—');
+      displayName.textContent = 'Nama kamu: ' + name;
+      btnLogin.disabled = !canSubmit();
+    }
+    function capitalize(s){ return s? s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(): s }
+    function shake(){ const card = document.querySelector('.card'); card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake'); }
+    function dropConfetti(){
+      const box = document.getElementById('confetti');
+      const colors = ['#6c63ff','#00c2a8','#ffb74d','#ef5350','#7e57c2','#42a5f5'];
+      for(let i=0;i<90;i++){
+        const el = document.createElement('div');
+        el.className = 'piece';
+        el.style.left = (Math.random()*100) + '%';
+        el.style.top = (-20 - Math.random()*60) + 'px';
+        el.style.background = colors[Math.floor(Math.random()*colors.length)];
+        el.style.transform = `translateY(${-50 - Math.random()*100}px)`;
+        el.style.animationDelay = (Math.random()*300) + 'ms';
+        box.appendChild(el);
+        setTimeout(()=> el.remove(), 1200);
+      }
+    }
+
+    // Gambar palette
+    function drawPalette(){
+      palette.innerHTML = '';
+      COLORS.forEach(c=>{
+        const b = document.createElement('button');
+        b.className = 'swatch';
+        b.style.background = c.hex;
+        b.title = c.key;
+        b.setAttribute('aria-label', c.key);
+        b.addEventListener('click', ()=>{
+          selectedColor = c.key;
+          document.querySelectorAll('.swatch').forEach(s=> s.classList.remove('selected'));
+          b.classList.add('selected');
+          beep(700,60,'sine',0.05);
+          updateDisplay();
+        });
+        palette.appendChild(b);
+      });
+    }
+
+    function verify(){
+      const animalOK = animal.value.trim().toLowerCase() === CORRECT_ANIMAL;
+      const colorOK = selectedColor === CORRECT_COLOR_LABEL;
+      const pinOK = pin === CORRECT_PIN;
+      if(animalOK && colorOK && pinOK){
+        setMessage(status, 'Berhasil! Selamat datang 👋', 'ok');
+        beep(880,120,'triangle',0.08); setTimeout(()=>beep(1046,140,'triangle',0.08), 120);
+        dropConfetti();
+        // window.location.href = '/dashboard';
+      } else {
+        setMessage(status, 'Ups, kombinasi belum tepat. Coba lagi ya!', 'err');
+        beep(220,140,'sawtooth',0.06); setTimeout(()=>beep(160,160,'sawtooth',0.06), 160);
+        shake();
+      }
+    }
+
+    // Keypad PIN
+    function press(k){
+      if(k === 'bk'){
+        pin = pin.slice(0,-1); updateDots(); setMessage(msg,'',''); beep(420,60,'square',0.05); btnLogin.disabled = !canSubmit(); return;
+      }
+      if(k === 'ok'){
+        if(canSubmit()) verify(); else setMessage(msg, 'Lengkapi nama, warna, dan 6 angka PIN dulu ya.', '');
+        return;
+      }
+      if(/^[0-9]$/.test(k)){
+        if(pin.length < 6){ pin += k; updateDots(); beep(640,50,'sine',0.05); btnLogin.disabled = !canSubmit(); }
+      }
+    }
+
+    document.querySelectorAll('.key').forEach(btn=> btn.addEventListener('click', ()=> press(btn.dataset.k)));
+    window.addEventListener('keydown', (e)=>{
+      if(e.key >= '0' && e.key <= '9') press(e.key);
+      else if(e.key === 'Backspace') press('bk');
+      else if(e.key === 'Enter') press('ok');
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', ()=>{ pin = ""; updateDots(); setMessage(msg,'',''); btnLogin.disabled = !canSubmit(); beep(360,60,'square',0.05); });
+    btnLogin.addEventListener('click', ()=> verify());
+
+    // Nama hewan
+    animal.addEventListener('input', updateDisplay);
+    btnDice.addEventListener('click', ()=>{
+      const animals = ['Singa','Kelinci','Harimau','Gajah','Kuda','Rusa','Burung','Kucing','Anjing','Panda'];
+      const a = animals[Math.floor(Math.random()*animals.length)];
+      const c = COLORS[Math.floor(Math.random()*COLORS.length)].key;
+      animal.value = a; selectedColor = c;
+      document.querySelectorAll('.swatch').forEach(s=> s.classList.remove('selected'));
+      // pilih swatch yang cocok
+      [...palette.children].forEach((el)=>{ if(el.getAttribute('aria-label')===c) el.classList.add('selected') });
+      updateDisplay();
+      beep(760,90,'sine',0.06);
+    });
+
+    // Init
+    function init(){
+      drawPalette();
+      updateDots();
+      updateDisplay();
+      setMessage(msg, 'Siap! Pilih warna & ketik nama hewanmu, lalu isi PIN.', '');
+    }
+    init();
+  </script>
+</body>
+</html>

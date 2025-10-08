@@ -73,6 +73,65 @@
             cursor: not-allowed;
             opacity: 0.7;
         }
+        /* Styles for Level Selection */
+        #level-select-screen {
+            display: block;
+        }
+        .level-node {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background-color: #38bdf8; /* sky-500 */
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 6px solid white;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        .level-node:hover:not(.locked) {
+            transform: scale(1.1);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        .level-node span:first-child {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        .level-node .node-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .level-node.locked {
+            background-color: #bdc8d6;
+            color: #f1f5f9;
+            cursor: not-allowed;
+        }
+        .level-node.locked::after {
+            content: '🔒';
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(0,0,0,0.3);
+        }
+        .path-connector {
+            width: 40px;
+            height: 6px;
+            background-color: #cbd5e1;
+            align-self: center;
+        }
+        #back-to-menu {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 10;
+        }
+
         .code-block {
             background-color: #1e293b; /* Slate 800 */
             color: white;
@@ -171,7 +230,10 @@
 <body class="text-slate-700">
 
     <!-- Header Section -->
-    <header class="text-center py-8 px-4">
+    <header class="relative text-center py-8 px-4">
+        <button id="back-to-menu" class="nav-button bg-white text-slate-600 font-bold py-2 px-4 rounded-lg text-sm" style="display: none;">
+            &larr; Back to Levels
+        </button>
         <div class="inline-block bg-white p-4 rounded-3xl shadow-lg">
             <h1 class="text-4xl md:text-5xl text-sky-500">Kiddie Coder Quest</h1>
         </div>
@@ -181,6 +243,24 @@
     <!-- Main Content: Quizzes will be swapped here -->
     <main class="container mx-auto px-4">
         
+        <!-- Level Selection Screen -->
+        <div id="level-select-screen" class="w-full max-w-4xl text-center">
+            <h2 class="text-3xl text-slate-700 mb-10">Choose Your Quest!</h2>
+            <div class="flex flex-wrap justify-center items-center gap-x-2 gap-y-8 md:gap-x-4">
+                <button data-level="0" class="level-node"><span>1</span><span class="node-label">Sentence</span></button>
+                <div class="path-connector"></div>
+                <button data-level="1" class="level-node"><span>2</span><span class="node-label">Rocket Fuel</span></button>
+                <div class="path-connector"></div>
+                <button data-level="2" class="level-node"><span>3</span><span class="node-label">Treasure</span></button>
+                <div class="path-connector hidden md:block"></div>
+                <button data-level="3" class="level-node"><span>4</span><span class="node-label">Magic Potion</span></button>
+                <div class="path-connector"></div>
+                <button data-level="4" class="level-node"><span>5</span><span class="node-label">Gate Key</span></button>
+                <div class="path-connector"></div>
+                <button data-level="5" class="level-node"><span>6</span><span class="node-label">Stars</span></button>
+            </div>
+        </div>
+
         <!-- Quiz 1: Say Hello -->
         <div class="quiz-card">
             <div class="p-6 md:p-8">
@@ -342,7 +422,26 @@
             const progressIndicator = document.getElementById('progress-indicator');
             const navigation = document.getElementById('navigation');
             const finishScreen = document.getElementById('finish-screen');
+            const levelSelectScreen = document.getElementById('level-select-screen');
+            const levelNodes = document.querySelectorAll('.level-node');
+            const backToMenuBtn = document.getElementById('back-to-menu');
             let currentQuizIndex = 0;
+
+            function showLevelSelect() {
+                levelSelectScreen.style.display = 'block';
+                navigation.style.display = 'none';
+                finishScreen.style.display = 'none';
+                backToMenuBtn.style.display = 'none';
+                quizzes.forEach(quiz => quiz.style.display = 'none');
+            }
+
+            function showQuizView(index) {
+                currentQuizIndex = parseInt(index);
+                levelSelectScreen.style.display = 'none';
+                navigation.style.display = 'flex';
+                backToMenuBtn.style.display = 'block';
+                showQuiz(currentQuizIndex);
+            }
 
             function showQuiz(index) {
                 // Hide all quizzes
@@ -368,6 +467,17 @@
                 }
             }
             
+            levelNodes.forEach(node => {
+                node.addEventListener('click', () => {
+                    if (!node.classList.contains('locked')) {
+                        const level = node.dataset.level;
+                        showQuizView(level);
+                    }
+                });
+            });
+
+            backToMenuBtn.addEventListener('click', showLevelSelect);
+
             nextBtn.addEventListener('click', () => {
                 if (currentQuizIndex < quizzes.length - 1) {
                     currentQuizIndex++;
@@ -376,6 +486,7 @@
                     // Reached the end
                     quizzes[currentQuizIndex].style.display = 'none';
                     navigation.style.display = 'none';
+                    backToMenuBtn.style.display = 'none';
                     finishScreen.style.display = 'block';
                 }
             });
@@ -408,9 +519,8 @@
             [dropzone, dragSource].forEach(container => {
                 container.addEventListener('dragover', e => {
                     e.preventDefault();
-                    if (e.currentTarget.classList.contains('dropzone') || e.currentTarget.classList.contains('draggable-container')) {
-                        e.currentTarget.classList.add('drag-over');
-                    }
+                    // Simplified the class check to just 'drag-over'
+                    e.currentTarget.classList.add('drag-over');
                 });
 
                 container.addEventListener('dragleave', e => {
@@ -426,8 +536,8 @@
                 });
             });
 
-            // Show the first quiz initially
-            showQuiz(0);
+            // Show the level select screen initially
+            showLevelSelect();
         });
 
         function restartQuest() {
@@ -533,6 +643,7 @@
 
 </body>
 </html>
+
 
 
 
