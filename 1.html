@@ -76,15 +76,6 @@
             border-color: #60a5fa;
         }
         
-        /* Cute dance animation for the character */
-        @keyframes dance {
-            0%, 100% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(-15deg) scale(1.1); }
-            75% { transform: rotate(15deg) scale(1.1); }
-        }
-        .dancing {
-            animation: dance 0.5s ease-in-out 3;
-        }
     </style>
 </head>
 <body class="p-4">
@@ -101,27 +92,15 @@
         <!-- Header -->
         <header class="text-center mb-4">
             <div class="flex justify-center items-center gap-4">
-                <h1 class="font-fredoka text-4xl md:text-5xl text-gray-800 tracking-wider">Quiz Time!</h1>
+                <h1 class="font-fredoka text-4xl md:text-5xl text-gray-800 tracking-wider">Block Workspace</h1>
             </div>
         </header>
 
-        <!-- Main content area with two columns -->
-        <main class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+        <!-- Main content area - centered single column -->
+        <main class="flex-grow flex justify-center items-center h-full">
 
-            <!-- Left Column: Quiz Question and Character -->
-            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 flex flex-col shadow-lg justify-between">
-                <div>
-                    <h2 class="font-fredoka text-2xl text-gray-700 mb-2">Question 1: Make the Bear Dance!</h2>
-                    <p class="text-gray-600">Drag the blocks on the right into the workspace to make the bear do a happy dance.</p>
-                </div>
-                <!-- Cute character display -->
-                <div class="flex-grow flex items-center justify-center">
-                    <img src="https://placehold.co/200x200/FFFFFF/A78BFA?text=🐻" alt="Cute Bear" class="h-48 w-48" id="character-bear">
-                </div>
-            </div>
-
-            <!-- Right Column: Draggable Code Blocks & Workspace -->
-            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg flex flex-col">
+            <!-- Draggable Code Blocks & Workspace -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg flex flex-col w-full max-w-lg h-auto">
                 <h2 class="font-fredoka text-2xl text-center text-gray-700 mb-4">Code Blocks</h2>
                 <div class="space-y-3">
                     <!-- Draggable Block 1 -->
@@ -163,7 +142,6 @@
         const draggables = document.querySelectorAll('.code-block');
         const dropzone = document.getElementById('quiz-workspace');
         const runButton = document.getElementById('run-code-btn');
-        const bear = document.getElementById('character-bear');
 
         draggables.forEach(draggable => {
             draggable.addEventListener('dragstart', () => {
@@ -201,21 +179,6 @@
             }
         });
 
-        // Fun animation when running the code
-        runButton.addEventListener('click', () => {
-            // A simple check to see if the correct blocks are in place
-            const blockTexts = Array.from(dropzone.children).map(child => child.textContent.trim());
-            const hasStart = blockTexts.includes('When Game Starts');
-            const hasDance = blockTexts.includes('Do a Happy Dance');
-
-            if (hasStart && hasDance) {
-                bear.classList.add('dancing');
-                // Remove the class after the animation finishes so it can run again
-                setTimeout(() => {
-                    bear.classList.remove('dancing');
-                }, 1500); // Animation is 0.5s and runs 3 times
-            }
-        });
     </script>
 
 </body>
