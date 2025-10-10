@@ -75,6 +75,16 @@
             background-color: rgba(255, 255, 255, 0.7);
             border-color: #60a5fa;
         }
+        
+        /* Cute dance animation for the character */
+        @keyframes dance {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.1); }
+            75% { transform: rotate(15deg) scale(1.1); }
+        }
+        .dancing {
+            animation: dance 0.5s ease-in-out 3;
+        }
     </style>
 </head>
 <body class="p-4">
@@ -98,23 +108,20 @@
         <!-- Main content area with two columns -->
         <main class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
 
-            <!-- Left Column: Quiz Question and Workspace -->
-            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 flex flex-col shadow-lg">
-                <div class="mb-4">
+            <!-- Left Column: Quiz Question and Character -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 flex flex-col shadow-lg justify-between">
+                <div>
                     <h2 class="font-fredoka text-2xl text-gray-700 mb-2">Question 1: Make the Bear Dance!</h2>
-                    <p class="text-gray-600">Drag the blocks into the workspace to make the bear do a happy dance.</p>
+                    <p class="text-gray-600">Drag the blocks on the right into the workspace to make the bear do a happy dance.</p>
                 </div>
-                <!-- Dropzone for code blocks -->
-                <div id="quiz-workspace" class="flex-grow bg-white/70 rounded-2xl p-4 space-y-2">
-                    <!-- Dropped blocks will appear here -->
+                <!-- Cute character display -->
+                <div class="flex-grow flex items-center justify-center">
+                    <img src="https://placehold.co/200x200/FFFFFF/A78BFA?text=🐻" alt="Cute Bear" class="h-48 w-48" id="character-bear">
                 </div>
-                <button class="mt-4 w-full bg-green-400 hover:bg-green-500 text-white font-fredoka text-2xl py-3 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
-                    Run Code!
-                </button>
             </div>
 
-            <!-- Right Column: Draggable Code Blocks -->
-            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg">
+            <!-- Right Column: Draggable Code Blocks & Workspace -->
+            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg flex flex-col">
                 <h2 class="font-fredoka text-2xl text-center text-gray-700 mb-4">Code Blocks</h2>
                 <div class="space-y-3">
                     <!-- Draggable Block 1 -->
@@ -138,6 +145,15 @@
                         Stop
                     </div>
                 </div>
+                
+                <!-- Dropzone for code blocks -->
+                <h3 class="font-fredoka text-xl text-center text-gray-700 mt-6 mb-2">Workspace</h3>
+                <div id="quiz-workspace" class="flex-grow bg-white/70 rounded-2xl p-4 space-y-2">
+                    <!-- Dropped blocks will appear here -->
+                </div>
+                <button id="run-code-btn" class="mt-4 w-full bg-green-400 hover:bg-green-500 text-white font-fredoka text-2xl py-3 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                    Run Code!
+                </button>
             </div>
         </main>
     </div>
@@ -146,6 +162,8 @@
         // Simple drag and drop functionality
         const draggables = document.querySelectorAll('.code-block');
         const dropzone = document.getElementById('quiz-workspace');
+        const runButton = document.getElementById('run-code-btn');
+        const bear = document.getElementById('character-bear');
 
         draggables.forEach(draggable => {
             draggable.addEventListener('dragstart', () => {
@@ -182,7 +200,24 @@
                 dropzone.appendChild(newBlock);
             }
         });
+
+        // Fun animation when running the code
+        runButton.addEventListener('click', () => {
+            // A simple check to see if the correct blocks are in place
+            const blockTexts = Array.from(dropzone.children).map(child => child.textContent.trim());
+            const hasStart = blockTexts.includes('When Game Starts');
+            const hasDance = blockTexts.includes('Do a Happy Dance');
+
+            if (hasStart && hasDance) {
+                bear.classList.add('dancing');
+                // Remove the class after the animation finishes so it can run again
+                setTimeout(() => {
+                    bear.classList.remove('dancing');
+                }, 1500); // Animation is 0.5s and runs 3 times
+            }
+        });
     </script>
 
 </body>
 </html>
+
