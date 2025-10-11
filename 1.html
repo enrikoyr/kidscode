@@ -1,186 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Cubs Academy - Quiz Time!</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Base styles from previous page for consistency */
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            margin: 0;
-            font-family: 'Nunito', sans-serif;
-            position: relative;
-        }
-        .font-fredoka {
-            font-family: 'Fredoka One', cursive;
-        }
-        body {
-            background: linear-gradient(-45deg, #f0f9ff, #ecfccb, #fce7f3, #e0e7ff);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Code Cubs Academy - Quiz Time!</title>
 
-        /* Floating bubbles animation */
-        .bubble {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: rise 10s infinite ease-in;
-            z-index: 1;
-        }
-        .bubble:nth-child(1) { width: 40px; height: 40px; left: 10%; animation-duration: 8s; }
-        .bubble:nth-child(2) { width: 20px; height: 20px; left: 20%; animation-duration: 5s; animation-delay: 1s; }
-        .bubble:nth-child(3) { width: 50px; height: 50px; left: 35%; animation-duration: 7s; animation-delay: 2s; }
-        .bubble:nth-child(4) { width: 80px; height: 80px; left: 50%; animation-duration: 11s; animation-delay: 0s; }
-        .bubble:nth-child(5) { width: 35px; height: 35px; left: 55%; animation-duration: 6s; animation-delay: 1s; }
-        .bubble:nth-child(6) { width: 45px; height: 45px; left: 65%; animation-duration: 8s; animation-delay: 3s; }
-        .bubble:nth-child(7) { width: 60px; height: 60px; left: 80%; animation-duration: 12s; animation-delay: 2s; }
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
 
-        @keyframes rise {
-            0% { bottom: -100px; transform: translateX(0); }
-            50% { transform: translateX(100px); }
-            100% { bottom: 1080px; transform: translateX(-200px); }
-        }
-        
-        /* Styles for draggable blocks and dropzone */
-        .code-block {
-            cursor: grab;
-            user-select: none;
-            transition: all 0.2s ease-in-out;
-        }
-        .code-block:active {
-            cursor: grabbing;
-            opacity: 0.8;
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        #quiz-workspace {
-            min-height: 200px;
-            border: 3px dashed rgba(0,0,0,0.1);
-            transition: background-color 0.3s;
-        }
-        #quiz-workspace.drag-over {
-            background-color: rgba(255, 255, 255, 0.7);
-            border-color: #60a5fa;
-        }
-        
-    </style>
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="p-4">
+<body>
+  <!-- Background bubbles -->
+  <div class="bubbles">
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
 
-    <!-- Background bubbles -->
-    <div class="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div class="bubble"></div> <div class="bubble"></div> <div class="bubble"></div>
-        <div class="bubble"></div> <div class="bubble"></div> <div class="bubble"></div>
-        <div class="bubble"></div>
+  <!-- Page container -->
+  <div class="container">
+    <!-- Header -->
+    <header class="page-header">
+      <h1 class="brand">Block Workspace</h1>
+    </header>
+
+    <!-- Two-column content -->
+<main class="stack">          <!-- was class="split" -->
+  <div class="split">         <!-- keeps the two cards side-by-side -->
+    <section class="card">
+      <header class="card__header">
+        <h2 class="card__title">Soal</h2>
+      </header>
+      <div class="card__body">
+        <p>Text Soal 1</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <header class="card__header">
+        <h2 class="card__title">Code Blocks</h2>
+      </header>
+      <div class="card__body">
+        <div class="blocks">
+          <div draggable="true" class="code-block code-block--blue">When Game</div>
+          <div draggable="true" class="code-block code-block--pink">Do a Happy Dance</div>
+          <div draggable="true" class="code-block code-block--amber">Wait 1 Second</div>
+          <div draggable="true" class="code-block code-block--teal">Play Music</div>
+          <div draggable="true" class="code-block code-block--red">Stop</div>
+        </div>
+
+        <h3 class="workspace__title">Workspace</h3>
+        <div id="quiz-workspace" class="workspace" aria-label="Code workspace"></div>
+        <button id="run-code-btn" class="btn">Run Code!</button>
+      </div>
+    </section>
+  </div>
+    <section class="card card--fluid">
+    <header class="card__header">
+      <h2 class="card__title">Output</h2>
+    </header>
+    <div class="card__body">
+      <p>Output will appear here!</p>
     </div>
-
-    <!-- Main container -->
-    <div class="relative z-10 w-full h-full flex flex-col max-w-7xl mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-4">
-            <div class="flex justify-center items-center gap-4">
-                <h1 class="font-fredoka text-4xl md:text-5xl text-gray-800 tracking-wider">Block Workspace</h1>
-            </div>
-        </header>
-
-        <!-- Main content area - centered single column -->
-        <main class="flex-grow flex justify-center items-center h-full">
-
-            <!-- Draggable Code Blocks & Workspace -->
-            <div class="bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-lg flex flex-col w-full max-w-lg h-auto">
-                <h2 class="font-fredoka text-2xl text-center text-gray-700 mb-4">Code Blocks</h2>
-                <div class="space-y-3">
-                    <!-- Draggable Block 1 -->
-                    <div draggable="true" class="code-block p-3 bg-blue-400 text-white rounded-lg shadow font-semibold">
-                        When Game Starts
-                    </div>
-                    <!-- Draggable Block 2 -->
-                    <div draggable="true" class="code-block p-3 bg-pink-400 text-white rounded-lg shadow font-semibold">
-                        Do a Happy Dance
-                    </div>
-                    <!-- Draggable Block 3 -->
-                    <div draggable="true" class="code-block p-3 bg-amber-400 text-white rounded-lg shadow font-semibold">
-                        Wait 1 Second
-                    </div>
-                     <!-- Draggable Block 4 -->
-                    <div draggable="true" class="code-block p-3 bg-teal-400 text-white rounded-lg shadow font-semibold">
-                        Play Music
-                    </div>
-                     <!-- Draggable Block 5 -->
-                    <div draggable="true" class="code-block p-3 bg-red-400 text-white rounded-lg shadow font-semibold">
-                        Stop
-                    </div>
-                </div>
-                
-                <!-- Dropzone for code blocks -->
-                <h3 class="font-fredoka text-xl text-center text-gray-700 mt-6 mb-2">Workspace</h3>
-                <div id="quiz-workspace" class="flex-grow bg-white/70 rounded-2xl p-4 space-y-2">
-                    <!-- Dropped blocks will appear here -->
-                </div>
-                <button id="run-code-btn" class="mt-4 w-full bg-green-400 hover:bg-green-500 text-white font-fredoka text-2xl py-3 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
-                    Run Code!
-                </button>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        // Simple drag and drop functionality
-        const draggables = document.querySelectorAll('.code-block');
-        const dropzone = document.getElementById('quiz-workspace');
-        const runButton = document.getElementById('run-code-btn');
-
-        draggables.forEach(draggable => {
-            draggable.addEventListener('dragstart', () => {
-                draggable.classList.add('dragging');
-            });
-
-            draggable.addEventListener('dragend', () => {
-                draggable.classList.remove('dragging');
-            });
-        });
-
-        dropzone.addEventListener('dragover', e => {
-            e.preventDefault(); // Necessary to allow dropping
-            dropzone.classList.add('drag-over');
-        });
-
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('drag-over');
-        });
-        
-        dropzone.addEventListener('dragenter', e => {
-            e.preventDefault();
-        });
+  </section>
+</main>
 
 
-        dropzone.addEventListener('drop', e => {
-            e.preventDefault();
-            dropzone.classList.remove('drag-over');
-            const dragging = document.querySelector('.dragging');
-            if (dragging) {
-                // To make it more robust, we clone the node so you can reuse blocks
-                const newBlock = dragging.cloneNode(true);
-                newBlock.classList.remove('dragging');
-                dropzone.appendChild(newBlock);
-            }
-        });
+  <!-- Drag & drop -->
+  <script>
+    const draggables = document.querySelectorAll('.code-block');
+    const dropzone = document.getElementById('quiz-workspace');
 
-    </script>
+    draggables.forEach(el => {
+      el.addEventListener('dragstart', () => el.classList.add('dragging'));
+      el.addEventListener('dragend',   () => el.classList.remove('dragging'));
+    });
 
+    dropzone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropzone.classList.add('drag-over');
+    });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+    dropzone.addEventListener('dragenter', e => e.preventDefault());
+
+    dropzone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropzone.classList.remove('drag-over');
+      const dragging = document.querySelector('.dragging');
+      if (dragging) {
+        const clone = dragging.cloneNode(true);
+        clone.classList.remove('dragging');
+        dropzone.appendChild(clone);
+      }
+    });
+  </script>
 </body>
 </html>
-
